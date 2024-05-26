@@ -15,11 +15,14 @@ const (
 	NEW_LINE = 13
 )
 
+var previousCommands = []string{}
+
 func Run() error {
 	fmt.Print(CURSOR_LEFT)
 	fmt.Print("> ")
 	var line_buffer = make([]byte, 0)
 	var cursor_position_horiz = 0
+	var cursor_position_verti= 0
 	for {
 		// Simple read line
 		var buf [3]byte
@@ -40,9 +43,15 @@ func Run() error {
 							cursor_position_horiz--
 						}
 					}
+				} else if buf[2] == 'A' {
+					fmt.Print(previousCommands[cursor_position_verti])
+					cursor_position_verti++
+				} else if buf[2] == 'B' {
+					
 				}
 			}
 		} else if buf[0] == NEW_LINE {
+			previousCommands = append(previousCommands, string(line_buffer[:]))
 			fmt.Println(CURSOR_LEFT)
 			fmt.Printf("Echoing: %s\n%s", line_buffer, CURSOR_LEFT)
 			line_buffer = make([]byte, 0)
