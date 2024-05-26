@@ -1,13 +1,14 @@
 package main
 
 import (
-	"cs50-romain/terminalfun/box"
-	"cs50-romain/terminalfun/progress"
+	//"cs50-romain/terminalfun/box"
+	//"cs50-romain/terminalfun/progress"
+	"cs50-romain/terminalfun/shell"
 	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
+	//"time"
 	"unsafe"
 )
 
@@ -61,9 +62,12 @@ func main() {
 		fmt.Printf("Read character: %q\r\n", buf[0])
 	}
 	*/
-	box.Render()
-	time.Sleep(5 * time.Second)
-	progress.ProgressRender()
+	//box.Render()
+	//time.Sleep(5 * time.Second)
+	//progress.ProgressRender()
+	if err := shell.Run(); err != nil {
+		fmt.Println(err)
+	}
 }
 
 // getTermios retrieves the terminal attributes for the given file descriptor.

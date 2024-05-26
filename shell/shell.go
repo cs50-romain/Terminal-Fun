@@ -12,12 +12,14 @@ const (
 	cursorrt = "\u001b[C"
 	cursorlf = "\u001b[D"
 	CTRL_C = 3
+	NEW_LINE = 13
 )
 
 func Run() error {
 	fmt.Print(CURSOR_LEFT)
 	fmt.Print("> ")
-	var line_buffer = make([]byte, 64) 
+	var line_buffer = make([]byte, 0)
+	var cursor_position_horiz = 0
 	for {
 		// Simple read line
 		var buf [3]byte
@@ -27,23 +29,31 @@ func Run() error {
 			if buf[1] == '[' {
 				if buf[2] == 'C' {
 					// Only want to go as far there are characters
-					fmt.Print(cursorrt)
+					if cursor_position_horiz <= len(line_buffer) / 3 - 1{
+						fmt.Print(cursorrt)
+						cursor_position_horiz++
+					}
 				} else if buf[2] == 'D' {
-					fmt.Print(cursorlf)
+					if cursor_position_horiz > 0 {
+						fmt.Print(cursorlf)
+						if cursor_position_horiz > 0 {
+							cursor_position_horiz--
+						}
+					}
 				}
-			} else {
-				continue
 			}
-		} else if buf[0] == 13 {
+		} else if buf[0] == NEW_LINE {
 			fmt.Println(CURSOR_LEFT)
 			fmt.Printf("Echoing: %s\n%s", line_buffer, CURSOR_LEFT)
-			line_buffer = make([]byte, 64)
+			line_buffer = make([]byte, 0)
+			cursor_position_horiz = 0
 			fmt.Print("> ")
 		} else if buf[0] == 'q' || buf[0] == CTRL_C {
 			fmt.Println(CURSOR_LEFT)
 			break
 		} else {
-			line_buffer = append(line_buffer, buf[:]...)	
+			line_buffer = append(line_buffer, buf[:]...)
+			cursor_position_horiz++
 		}
 	}
 	return nil
